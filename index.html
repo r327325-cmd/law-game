@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أسئلة قانونية | لعبة تحدي الوعي القانوني والجرائم المعلوماتية</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-purple-600 selection:text-white">
+
+    <!-- Header -->
+    <header class="bg-slate-900/80 backdrop-blur-md border-b border-purple-900/40 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-br from-purple-600 to-amber-500 text-white font-black text-xl w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-900/50">
+                    ⚖️
+                </div>
+                <div>
+                    <h1 class="text-xl font-black text-white tracking-wide">أسئلة قانونية</h1>
+                    <p class="text-[11px] text-amber-400 font-bold">خريجات إدارة أعمال - شعبة 13</p>
+                </div>
+            </div>
+            
+            <div id="score-badge" class="hidden items-center gap-2 bg-purple-950/80 border border-purple-500/40 px-4 py-1.5 rounded-full">
+                <span class="text-xs text-purple-300 font-bold">النقاط:</span>
+                <span id="score" class="text-base font-black text-amber-400">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Game Container -->
+    <main class="max-w-3xl mx-auto px-4 py-8 w-full flex-grow flex flex-col justify-center">
+
+        <!-- Welcome Card -->
+        <div id="start-card" class="bg-slate-900/90 border border-purple-500/30 rounded-3xl p-6 sm:p-10 text-center shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-12 -right-12 w-40 h-40 bg-purple-600/10 rounded-full blur-3xl"></div>
+            
+            <span class="bg-purple-900/50 text-purple-300 border border-purple-500/30 text-xs font-bold px-4 py-1.5 rounded-full inline-block mb-4">
+                تحدي الجرائم المعلوماتية والابتزاز 🛡️
+            </span>
+            <h2 class="text-3xl sm:text-4xl font-black text-white mb-4 leading-tight">
+                اختبري وعيك القانوني! ⚖️
+            </h2>
+            <p class="text-slate-300 text-sm sm:text-base max-w-lg mx-auto mb-8 font-medium leading-relaxed">
+                15 سؤالاً تفاعلياً متنوعاً (خيارات، صح وخطأ، وقضايا واقعية) للتعرف على حقوقك والأنظمة السعودية في الحماية الرقمية.
+            </p>
+            
+            <button onclick="startGame()" class="bg-gradient-to-r from-purple-600 to-amber-500 hover:from-purple-500 hover:to-amber-400 text-white font-extrabold text-lg px-8 py-4 rounded-2xl shadow-xl shadow-purple-900/40 transition-all hover:scale-105 active:scale-95 cursor-pointer">
+                ابدئي التحدي الآن 🚀
+            </button>
+        </div>
+
+        <!-- Question Box Card -->
+        <div id="quiz-card" class="hidden bg-slate-900/90 border border-purple-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
+            <!-- Progress Bar -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center text-xs font-bold text-slate-400 mb-2">
+                    <span id="question-number">السؤال 1 من 15</span>
+                    <span id="type-tag" class="text-amber-400 bg-amber-950/60 border border-amber-500/40 px-2.5 py-0.5 rounded-md">خيارات</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                    <div id="progress-bar" class="bg-gradient-to-r from-purple-600 to-amber-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Question Title -->
+            <h3 id="question-text" class="text-lg sm:text-xl font-black text-white mb-6 leading-relaxed">
+                <!-- Injected via JS -->
+            </h3>
+
+            <!-- Options Container -->
+            <div id="options-container" class="space-y-3">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- Feedback Explanation Banner -->
+            <div id="feedback-box" class="hidden mt-6 p-4 rounded-2xl border text-sm font-medium leading-relaxed">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- Next Button -->
+            <button id="next-btn" onclick="nextQuestion()" class="hidden mt-6 w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-purple-900/30">
+                السؤال التالي ➔
+            </button>
+        </div>
+
+        <!-- Result Final Card -->
+        <div id="result-card" class="hidden bg-slate-900/90 border border-purple-500/30 rounded-3xl p-8 sm:p-10 text-center shadow-2xl">
+            <div class="text-6xl mb-4" id="result-icon">🎉</div>
+            <h3 class="text-2xl sm:text-3xl font-black text-white mb-2" id="result-title">نتيجة التحدي</h3>
+            <p class="text-slate-300 text-sm mb-6" id="result-msg">احسنت!</p>
+
+            <div class="bg-slate-950 border border-purple-900/50 p-6 rounded-2xl max-w-xs mx-auto mb-8">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">النتيجة النهائية:</span>
+                <span id="final-score" class="text-4xl font-black text-amber-400">0 / 15</span>
+            </div>
+
+            <button onclick="startGame()" class="bg-gradient-to-r from-purple-600 to-amber-500 text-white font-bold px-8 py-3.5 rounded-2xl shadow-lg transition-all hover:scale-105">
+                إعادة التحدي 🔄
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/90 border-t border-purple-900/30 py-6 mt-10">
+        <div class="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-right">
+            <div>
+                <p class="text-sm font-bold text-slate-200">مشروع أسئلة قانونية - التوعية بالجرائم المعلوماتية</p>
+                <p class="text-xs text-purple-400 mt-0.5">خريجات إدارة الأعمال - شعبة 13 🎓</p>
+            </div>
+            <div class="bg-purple-950/80 border border-purple-500/30 px-4 py-2 rounded-xl">
+                <span class="text-xs text-slate-400">تصميم وتطوير:</span>
+                <span class="text-xs font-black text-amber-400 mr-1">ريناد اللحياني 👩‍💻✨</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Game Engine JS -->
+    <script>
+        const questions = [
+            {
+                type: "خيارات",
+                question: "ما هو التصرف الصحيح الأول فور التعرض لتهديد بالابتزاز الإلكتروني؟",
+                options: [
+                    "دفع المبلغ المطلوب لمرة واحدة فقط لإنهاء المشكلة.",
+                    "التوقف عن التواصل فوراً، توثيق المحادثات، والإبلاغ عبر تطبيق 'كلنا أمن'.",
+                    "حذف جميع المحادثات وحسابات التواصل الاجتماعي نهائياً."
+                ],
+                correct: 1,
+                explanation: "التوقف عن التواصل وتوثيق المحادثات يمنع المبتز من الضغط عليكِ، والإبلاغ المباشر يحميكِ قانونياً."
+            },
+            {
+                type: "صح أم خطأ",
+                question: "هل التخفي خلف أسماء مستعارة أو حسابات وهمية يمنع الجهات الأمنية من معرفة المبتز؟",
+                options: ["نعم، الحسابات الوهمية لا يمكن تتبعها.", "لا، تملك الجهات الأمنية تقنيات لتتبع الأثر الرقمي وتحديد الهوية."],
+                correct: 1,
+                explanation: "الجهات الأمنية السعودية تمتلك تقنيات متقدمة لتتبع عنوان IP والمعرفات الرقمية بدقة عالية."
+            },
+            {
+                type: "خيارات",
+                question: "ما هي عقوبة جريمة الابتزاز وفق نظام مكافحة الجرائم المعلوماتية السعودي؟",
+                options: [
+                    "غرامة مالية قدرها 50 ألف ريال فقط.",
+                    "السجن مدة تصل إلى سنة، وغرامة تصل إلى 500 ألف ريال، أو بإحدى العقوبتين.",
+                    "التعهد الخطي بعدم التكرار دون عقوبات مالية."
+                ],
+                correct: 1,
+                explanation: "المادة الثالثة من النظام تنص على السجن مدة لا تزيد على سنة وغرامة لا تزيد على 500 ألف ريال."
+            },
+            {
+                type: "صح أم خطأ",
+                question: "إعطاء كلمة السر أو الحساب الشخصي لشخص آخر يعفي صاحبه من المسؤولية القانونية.",
+                options: ["صح، المسؤولية تقع على من استخدم الحساب.", "خطأ، صاحب الحساب مسؤول قانونياً ما لم يثبت تعرضه للاختراق."],
+                correct: 1,
+                explanation: "أنتِ المسؤولة الأولى عن حساباتك الشخصية، لذلك لا تشاركي كلمات المرور مع أي شخص."
+            },
+            {
+                type: "خيارات",
+                question: "ما حكم إعادة نشر أو تداول المقاطع التشهيرية والابتزازية في منصات التواصل؟",
+                options: [
+                    "لا عقوبة على المشارك لأنه ليس هو من صور المقطع.",
+                    "يعاقب المشارك في النشر بنفس عقوبة المُنشئ لانتهاكه الخصوصية والتشهير.",
+                    "تقتصر العقوبة على صاحب الحساب الأصلي فقط."
+                ],
+                correct: 1,
+                explanation: "إعادة النشر تعتبر مساهمة في نشر الجريمة والتشهير بالآخرين وتستوجب العقوبة النظامية."
+            },
+            {
+                type: "صح أم خطأ",
+                question: "التقاط صور أو مقاطع فيديو لشخص دون إذنه في مكان عام يعتبر جريمة معلوماتية.",
+                options: ["صح، يُصنف كمساس بالحياة الخاصة ويستوجب العقوبة.", "خطأ، تصوير الأماكن العامة مسموح دائماً."],
+                correct: 0,
+                explanation: "تصوير الأشخاص دون إذن صريح يمس حياتهم الخاصة ومجرم بموجب المادة الثالثة من النظام."
+            },
+            {
+                type: "قضية واقعية",
+                question: "تلقت 'سارة' رسالة تهديد بنشر صورها الخاصة إذا لم تقم بتحويل مبلغ مالي. ما هي القناة المباشرة والآمنة للإبلاغ؟",
+                options: [
+                    "تطبيق 'كلنا أمن' أو الاتصال بالرقم الموحد للجرائم المعلوماتية.",
+                    "كتابة تغريدة في منصة X واستدراج المبتز.",
+                    "تحويل مبلغ بسيط لضمان عدم النشر."
+                ],
+                correct: 0,
+                explanation: "تطبيق 'كلنا أمن' يوفر خياراً خاصاً للجرائم المعلوماتية مع ضمان السرية التامة للبلاغ."
+            },
+            {
+                type: "صح أم خطأ",
+                question: "الخضوع لطلبات المبتز المالية أو العاطفية للمرة الأولى يجعله يتوقف عن الابتزاز.",
+                options: ["صح، سينتهي الأمر بمجرد تلبية طلبه.", "خطأ، الاستجابة تزيد من طمع المبتز واستمراره."],
+                correct: 1,
+                explanation: "تلبية طلب المبتز تجعله يطالب بالمزيد، والحل هو قطع التواصل والإبلاغ فوراً."
+            },
+            {
+                type: "خيارات",
+                question: "إذا تم الابتزاز عبر تطبيق خارج المملكة، كيف يتم التعامل مع القضية؟",
+                options: [
+                    "تسقط القضية لعدم اختصاص المحاكم المحلية.",
+                    "تقوم الجهات الأمنية بتتبعه عبر الاتفاقيات الدولية والمكاتب الأمنية المشتركة (كالإنتربول).",
+                    "لا يمكن تتبعه نهائياً."
+                ],
+                correct: 1,
+                explanation: "التعاون الدولي والإنتربول يتيح للجهات الأمنية ملاحقة المبتزين حتى لو كانوا خارج المملكة."
+            },
+            {
+                type: "صح أم خطأ",
+                question: "الدخول إلى موقع إلكتروني أو حساب شخص آخر دون مسوغ مشروع يعتبر جريمة معلوماتية.",
+                options: ["صح، يعتبر اختراقاً وتعدياً مجرماً قانوناً.", "خطأ، يعتبر مجرد فضول شخصي."],
+                correct: 0,
+                explanation: "الدخول غير المشروع للحسابات والمواقع مجرّم عقوبته السجن والغرامة."
+            },
+            {
+                type: "قضية واقعية",
+                question: "قام 'خالد' بتسجيل مكالمة صوتية لزميله دون علمه ونشرها في مبيعات أو مجموعة الواتساب:",
+                options: [
+                    "تصرفه صحيح طالما لم يغير الصوت.",
+                    "يُعد مرتـكباً لجريمة التجسس والتشهير المعاقب عليها قانوناً.",
+                    "يعاقب فقط إذا احتوت المكالمة على شتائم."
+                ],
+                correct: 1,
+                explanation: "تسجيل المكالمات دون علم الطرف الآخر ونشرها يعتبر اختراقاً للخصوصية وتجسساً."
+            },
+            {
+                type: "صح أم خطأ",
+                question: "تصوير وتداول صور الحوادث أو المصابين في الطرقات مجرّم نظاماً.",
+                options: ["صح، انتهاك لحرمة الحياة الخاصة للمصابين.", "خطأ، يعتبر توثيقاً صحفياً مسموحاً."],
+                correct: 0,
+                explanation: "تصوير الحوادث والمصابين ينتهك خصوصيتهم ومشاعر ذويهم ويُعاقب عليه القانون."
+            },
+            {
+                type: "خيارات",
+                question: "ما هي درجة سرية البلاغات المقدمة للجهات الأمنية في قضايا الابتزاز؟",
+                options: [
+                    "تُعرض أسماء الأطراف علنياً في صحيفة الدعوى.",
+                    "سرية تامة 100% لحماية الضحية وخصوصيتها وسمعتها.",
+                    "تكون سرية فقط إذا تم دفع رسوم خاصة."
+                ],
+                correct: 1,
+                explanation: "الجهات الأمنية في السعودية تحيط بلاغات الابتزاز بسرية مطلقة حفاظاً على الأفراد والأسر."
+            },
+            {
+                type: "صح أم خطأ",
+                question: "في حال تعرض قاصر لابتزاز إلكتروني، يحق لولي أمره تقديم بلاغ رسمي دون تأثير على مستقبله.",
+                options: ["صح، يحق لولي الأمر الإبلاغ والجهات تتعامل بسرية وحماية للطفل.", "خطأ، لا يمكن الإبلاغ."],
+                correct: 0,
+                explanation: "أنظمة حماية الطفل والجرائم المعلوماتية تكفل الحماية الكاملة والسرية للقاصرين."
+            },
+            {
+                type: "خيارات",
+                question: "ما الهدف الرئيسي من إنشاء 'نظام مكافحة الجرائم المعلوماتية' في المملكة؟",
+                options: [
+                    "منع استخدام الهواتف الذكية وتطبيقات التواصل.",
+                    "المحافظة على الأمن المعلوماتي وحماية الحقوق والمال والآداب العامة.",
+                    "فرض رسوم على استخدام الإنترنت."
+                ],
+                correct: 1,
+                explanation: "يهدف النظام إلى تعزيز الأمن الرقمي وحرية الأفراد في استخدام التكنولوجيا بأمان."
+            }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+
+        function startGame() {
+            currentQ = 0;
+            score = 0;
+            document.getElementById('start-card').classList.add('hidden');
+            document.getElementById('result-card').classList.add('hidden');
+            document.getElementById('quiz-card').classList.remove('hidden');
+            document.getElementById('score-badge').classList.remove('hidden');
+            document.getElementById('score-badge').classList.add('flex');
+            document.getElementById('score').innerText = score;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQ];
+            document.getElementById('question-number').innerText = `السؤال ${currentQ + 1} من ${questions.length}`;
+            document.getElementById('type-tag').innerText = q.type;
+            document.getElementById('question-text').innerText = q.question;
+            document.getElementById('progress-bar').style.width = `${((currentQ + 1) / questions.length) * 100}%`;
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-right p-4 rounded-2xl bg-slate-800/80 border border-slate-700/80 hover:border-purple-500 font-semibold text-sm sm:text-base text-slate-200 transition-all hover:bg-slate-800 cursor-pointer flex items-center justify-between group";
+                btn.onclick = () => checkAnswer(idx);
+                btn.innerHTML = `
+                    <span>${opt}</span>
+                    <span class="w-6 h-6 rounded-full border border-slate-600 flex items-center justify-center text-xs group-hover:border-purple-400">👈</span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIdx) {
+            const q = questions[currentQ];
+            const buttons = document.getElementById('options-container').children;
+            
+            // Disable all buttons
+            for (let btn of buttons) {
+                btn.disabled = true;
+                btn.classList.add('cursor-not-allowed', 'opacity-80');
+            }
+
+            const feedback = document.getElementById('feedback-box');
+            feedback.classList.remove('hidden');
+
+            if (selectedIdx === q.correct) {
+                score += 10;
+                document.getElementById('score').innerText = score;
+                buttons[selectedIdx].className = "w-full text-right p-4 rounded-2xl bg-emerald-950/80 border-2 border-emerald-500 font-bold text-emerald-200 text-sm sm:text-base flex items-center justify-between";
+                feedback.className = "mt-6 p-4 rounded-2xl border bg-emerald-950/50 border-emerald-500/50 text-emerald-200 text-xs sm:text-sm";
+                feedback.innerHTML = `<strong>إجابة صحيحة! 🎉</strong><br>${q.explanation}`;
+            } else {
+                buttons[selectedIdx].className = "w-full text-right p-4 rounded-2xl bg-rose-950/80 border-2 border-rose-500 font-bold text-rose-200 text-sm sm:text-base flex items-center justify-between";
+                buttons[q.correct].className = "w-full text-right p-4 rounded-2xl bg-emerald-950/80 border-2 border-emerald-500 font-bold text-emerald-200 text-sm sm:text-base flex items-center justify-between";
+                feedback.className = "mt-6 p-4 rounded-2xl border bg-rose-950/50 border-rose-500/50 text-rose-200 text-xs sm:text-sm";
+                feedback.innerHTML = `<strong>إجابة خاطئة! ❌</strong><br>${q.explanation}`;
+            }
+
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQ++;
+            if (currentQ < questions.length) {
+                showQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            document.getElementById('quiz-card').classList.add('hidden');
+            document.getElementById('result-card').classList.remove('hidden');
+            document.getElementById('final-score').innerText = `${score} / ${questions.length * 10}`;
+
+            const icon = document.getElementById('result-icon');
+            const title = document.getElementById('result-title');
+            const msg = document.getElementById('result-msg');
+
+            if (score >= 120) {
+                icon.innerText = "🏆";
+                title.innerText = "خبيرة قانونية ممتازة!";
+                msg.innerText = "ما شاء الله! لديكِ وعي قانوني رفيع بالأنظمة والجرائم المعلوماتية.";
+            } else if (score >= 80) {
+                icon.innerText = "⚖️";
+                title.innerText = "وعي قانوني جيد جداً!";
+                msg.innerText = "أداء رائع، ومعلوماتكِ حماية ممتازة لكِ ولصديقاتك.";
+            } else {
+                icon.innerText = "💡";
+                title.innerText = "فرصة رائعة للتعلم!";
+                msg.innerText = "ننصحكِ بإعادة التحدي للتعرف أكثر على الأنظمة الحامية لكِ.";
+            }
+        }
+    </script>
+
+</body>
+</html>
